@@ -1,12 +1,11 @@
-variable "sbcusdbcsdb" {
+variable "access_key" {
   type=string
   description = "Provide Access Key"
 }
 
-variable "secret" {
+variable "secret_key" {
   type=string
   description = "Provide Secret Key"
-  default = ""
 }
 
 variable "bucket_name" {
