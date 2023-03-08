@@ -1,0 +1,29 @@
+pipeline {
+  agent any
+
+  stages {
+    stage('Init') {
+      steps {
+          sh 'terraform init'
+      }
+    }
+
+    stage('Plan') {
+      steps {
+        sh 'Terraform plan --var-file=""'
+      }
+    }
+
+    stage('Apply') {
+      steps {
+        sh 'Terraform apply --var-file="" --auto-approve'
+      }
+    }
+
+     stage('Destroy') {
+      steps {
+        sh 'Terraform destroy --var-file="" --auto-approve'
+      }
+    }
+  }
+}
