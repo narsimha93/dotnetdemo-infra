@@ -21,8 +21,6 @@ pipeline {
 
     stage('Apply') {
       when {
-        branch 'feature/createinfra'
-
         expression {
           return !['none'].contains(params.tfenv)
         }
