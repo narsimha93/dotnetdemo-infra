@@ -1,29 +1,49 @@
 pipeline {
   agent any
 
+  environment {
+    AWS_ACCESS_KEY_ID="${params.ACCESS_KEY}"
+    AWS_SECRET_ACCESS_KEY="${params.SECRET_KEY}"
+  }
+
   stages {
     stage('Init') {
       steps {
-          sh 'terraform init'
+          sh "terraform init -reconfigure -backend-config params/${params.tfenv}.backend.tfvars"
       }
     }
 
     stage('Plan') {
       steps {
-        sh 'Terraform plan --var-file=""'
+        sh "terraform plan --var-file='params/${params.tfenv}.tfvars'"
       }
     }
 
     stage('Apply') {
+      when {
+        branch 'main'
+
+        expression {
+          return !['none'].contains(params.tfenv)
+        }
+      }
       steps {
-        sh 'Terraform apply --var-file="" --auto-approve'
+        input 'Do you want to apply changes ?'
+        sh "terraform apply --var-file='params/${params.tfenv}.tfvars' --auto-approve"
       }
     }
 
      stage('Destroy') {
       steps {
-        sh 'Terraform destroy --var-file="" --auto-approve'
+        input 'Do you want to destroy changes ?'
+        sh "terraform destroy --var-file='params/${params.tfenv}.tfvars' --auto-approve"
       }
+    }
+  }
+
+  post {
+    always {
+      echo 'done'
     }
   }
 }
