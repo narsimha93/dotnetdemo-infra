@@ -11,5 +11,4 @@ variable "secret_key" {
 variable "bucket_name" {
   type=string
   description = "Provide Bucket Name"
-  default = "bermtec"
 }
