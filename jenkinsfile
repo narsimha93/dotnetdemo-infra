@@ -26,7 +26,7 @@ pipeline {
         }
       }
       steps {
-        timeout(time:60, unit: 'SECONDS') {
+        timeout(time:600, unit: 'SECONDS') {
           input 'Do you want to apply changes ?'
         }
         sh "terraform apply --var-file='params/${params.tfenv}.tfvars' --auto-approve"

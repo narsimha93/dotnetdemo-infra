@@ -1,5 +1,5 @@
 resource "aws_secretsmanager_secret" "ggg" {
-  name = "bermtec_secret"
+  name = "bermtec_secret1"
 }
 
 
