@@ -12,3 +12,7 @@ variable "bucket_name" {
   type=string
   description = "Provide Bucket Name"
 }
+
+variable "ec2_name" {
+  type=string
+}

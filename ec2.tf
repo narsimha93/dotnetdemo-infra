@@ -18,7 +18,7 @@ resource "aws_subnet" "my_subnet" {
 
 resource "aws_network_interface" "foo" {
   subnet_id   = aws_subnet.my_subnet.id
-  private_ips = ["192.168.10.110"]
+  private_ips = ["192.168.10.200"]
 
   tags = {
     Name = "bermtec-ni"
@@ -70,7 +70,7 @@ resource "aws_instance" "web" {
   }
 
   tags = {
-    Name = "bermtec566777"
+    Name = var.ec2_name
   }
 }
 
