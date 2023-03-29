@@ -1,5 +1,11 @@
 pipeline {
-  agent any
+  agent {
+    label 'terraform'
+  }
+
+  parameters {
+    choice(name: 'tfenv', choices: ['dev', 'test', 'stage', 'prod'])
+  }
 
   environment {
     AWS_ACCESS_KEY_ID="${params.ACCESS_KEY}"
@@ -9,13 +15,13 @@ pipeline {
   stages {
     stage('Init') {
       steps {
-          sh "terraform init -reconfigure -backend-config params/${params.tfenv}.backend.tfvars"
+          sh "terraform init -reconfigure -backend-config config/${params.tfenv}.backend"
       }
     }
 
     stage('Plan') {
       steps {
-        sh "terraform plan --var-file='params/${params.tfenv}.tfvars'"
+        sh "terraform plan --var-file='config/${params.tfenv}.tfvars'"
       }
     }
 
@@ -29,21 +35,20 @@ pipeline {
         timeout(time:600, unit: 'SECONDS') {
           input 'Do you want to apply changes ?'
         }
-        sh "terraform apply --var-file='params/${params.tfenv}.tfvars' --auto-approve"
+        sh "terraform apply --var-file='config/${params.tfenv}.tfvars' --auto-approve"
       }
     }
 
-     stage('Destroy') {
-      steps {
-        input 'Do you want to destroy changes ?'
-        sh "terraform destroy --var-file='params/${params.tfenv}.tfvars' --auto-approve"
-      }
-    }
   }
 
   post {
     always {
       echo 'done'
+    }
+    failure {
+            mail to: "dl@xxx.com",
+            subject: "Infra Deployment Failure",
+            body: "${build.BuildNumber}"
     }
   }
 }

@@ -1,6 +1,6 @@
 terraform {
   required_providers {
-    aws = {
+     aws = {
       source  = "hashicorp/aws"
       version = "4.56.0"
     }
@@ -9,14 +9,11 @@ terraform {
 
 provider "aws" {
   # Configuration options
-  region     = "us-east-1"
-  access_key = var.access_key
-  secret_key = var.secret_key
+
 }
 
 terraform {
   backend "s3" {
-    region = "us-east-1"
   }
 }
 
