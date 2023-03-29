@@ -1,80 +1,36 @@
-resource "aws_vpc" "my_vpc" {
-  cidr_block = "192.168.0.0/16"
-
-  tags = {
-    Name = "bermtec-vpc"
+data "aws_ami" "app" {
+  most_recent = true
+ 
+  filter {
+    name   = "state"
+    values = ["available"]
   }
+ 
+  filter {
+    name   = "tag:Project"
+    values = ["postpay-c2c"]
+  }
+ 
 }
-
-resource "aws_subnet" "my_subnet" {
-  vpc_id            = aws_vpc.my_vpc.id
-  cidr_block        = "192.168.10.0/24"
-  availability_zone = "us-east-1d"
-
-  tags = {
-    Name = "bermtec-subnet"
-  }
-}
-
-resource "aws_network_interface" "foo" {
-  subnet_id   = aws_subnet.my_subnet.id
-  private_ips = ["192.168.10.110"]
-
-  tags = {
-    Name = "bermtec-ni"
-  }
-}
-
-resource "aws_security_group" "allow_tls" {
-  name        = "allow_tls"
-  description = "Allow TLS inbound traffic"
-  vpc_id      = aws_vpc.my_vpc.id
-
-  ingress {
-    description      = "TLS from VPC"
-    from_port        = 443
-    to_port          = 443
-    protocol         = "tcp"
-    cidr_blocks      = [aws_vpc.my_vpc.cidr_block]
-  }
-
-   ingress {
-    description      = "TLS from VPC"
-    from_port        = 80
-    to_port          = 80
-    protocol         = "tcp"
-    cidr_blocks      = [aws_vpc.my_vpc.cidr_block]
-  }
-
-  egress {
-    from_port        = 0
-    to_port          = 0
-    protocol         = "-1"
-    cidr_blocks      = ["0.0.0.0/0"]
-  }
-
-  tags = {
-    Name = "allow_tls"
-  }
-}
-
-
 
 resource "aws_instance" "web" {
-  ami         = "ami-0c9978668f8d55984"
+  ami         = data.aws_ami.app
   instance_type = "t2.micro"
+  for_each = var.ec2_names
+  key_name = var.keyvaluepair
 
-  network_interface {
-    network_interface_id = aws_network_interface.foo.id
-    device_index         = 0
+  subnet_id                   = aws_subnet.public_subnet.id
+  vpc_security_group_ids      = [aws_security_group.web_sg.id]
+  associate_public_ip_address = true
+
+
+   root_block_device {
+    volume_size = 8 # GB
+    volume_type = "gp3"
   }
 
-  tags = {
-    Name = "bermtec566777"
-  }
+  tags = merge(local.tags, {
+    Name = each.key
+  })
 }
 
-resource "aws_network_interface_sg_attachment" "sg_attachment" {
-  security_group_id    = aws_security_group.allow_tls.id
-  network_interface_id = aws_instance.web.primary_network_interface_id
-}
