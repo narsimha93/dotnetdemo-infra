@@ -23,7 +23,6 @@ steps:
     azureSubscription: 'SC-pipeline'
     appType: 'webAppLinux'
     WebAppName: 'web-app-net'
-    packageForLinux: '$(System.DefaultWorkingDirectory)/**/*.zip'
     RuntimeStack: 'DOTNETCORE|6.0'
 - task: Maven@4
   inputs:
