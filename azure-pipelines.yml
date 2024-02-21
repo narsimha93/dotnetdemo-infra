@@ -39,10 +39,4 @@ steps:
     sonarQubeRunAnalysis: true
     sqMavenPluginVersionChoice: 'pom'
 
-- task: DownloadBuildArtifacts@1
-  inputs:
-    buildType: 'current'
-    downloadType: 'single'
-    artifactName: 'art-dotnet'
-    downloadPath: '$(System.ArtifactsDirectory)'
 
